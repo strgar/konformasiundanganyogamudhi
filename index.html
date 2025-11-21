@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RSVP — Undangan Pernikahan</title>
+
+    <!-- TAILWIND CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet" />
+
+    <style>
+        body { font-family: "Poppins", sans-serif; }
+        .heading { font-family: "Playfair Display", serif; }
+    </style>
+</head>
+
+<body class="bg-white text-neutral-800">
+
+    <div class="max-w-xl mx-auto px-5 py-10">
+
+        <!-- HEADER -->
+        <div class="text-center mb-10">
+            <h1 class="heading text-3xl mb-2">Konfirmasi Kehadiran</h1>
+            <p class="text-sm text-neutral-500">Mohon isi formulir berikut untuk melakukan RSVP.</p>
+        </div>
+
+        <!-- CARD FORM -->
+        <div class="border rounded-2xl p-6 shadow-sm bg-white">
+            <form id="rsvpForm" onsubmit="submitRSVP(event)" class="space-y-5">
+
+                <!-- NAMA -->
+                <div>
+                    <label class="text-xs text-neutral-600 mb-1 block">Nama Lengkap</label>
+                    <input
+                        type="text"
+                        id="name"
+                        required
+                        placeholder="Nama Anda"
+                        class="w-full px-4 py-2 border rounded-lg text-sm focus:ring-1 focus:ring-black"
+                    />
+                </div>
+
+                <!-- NOMOR WA -->
+                <div>
+                    <label class="text-xs text-neutral-600 mb-1 block">Nomor WhatsApp</label>
+                    <input
+                        type="text"
+                        id="phone"
+                        placeholder="08xxxxxxxxxx"
+                        class="w-full px-4 py-2 border rounded-lg text-sm focus:ring-1 focus:ring-black"
+                    />
+                </div>
+
+                <!-- KEHADIRAN -->
+                <div>
+                    <label class="text-xs text-neutral-600 mb-2 block">Apakah Anda akan hadir?</label>
+                    <div class="flex gap-6 text-xs">
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="attend" value="Hadir" required class="accent-black" />
+                            Hadir
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="attend" value="Tidak Hadir" class="accent-black" />
+                            Tidak Hadir
+                        </label>
+                    </div>
+                </div>
+
+                <!-- JUMLAH TAMU -->
+                <div>
+                    <label class="text-xs text-neutral-600 mb-1 block">Jumlah yang Akan Hadir</label>
+                    <input
+                        type="number"
+                        id="guestCount"
+                        min="1"
+                        placeholder="Misal: 2 orang"
+                        class="w-full px-4 py-2 border rounded-lg text-sm focus:ring-1 focus:ring-black"
+                    />
+                </div>
+
+                <!-- CATATAN -->
+                <div>
+                    <label class="text-xs text-neutral-600 mb-1 block">Catatan (Opsional)</label>
+                    <textarea
+                        id="note"
+                        rows="3"
+                        placeholder="Contoh: Datang saat resepsi saja."
+                        class="w-full px-4 py-2 border rounded-lg text-sm focus:ring-1 focus:ring-black"
+                    ></textarea>
+                </div>
+
+                <!-- BUTTON -->
+                <button type="submit" class="w-full py-3 bg-black text-white rounded-lg text-sm hover:bg-neutral-800">
+                    Kirim RSVP
+                </button>
+            </form>
+        </div>
+
+        <!-- SUCCESS MESSAGE -->
+        <p id="successMsg" class="hidden mt-6 text-center text-green-600 text-sm">
+            Terima kasih! RSVP Anda telah dikirim.
+        </p>
+
+        <!-- QR CODE -->
+        <div class="mt-10 text-center">
+            <h2 class="heading text-xl mb-4">Scan QR untuk membuka RSVP</h2>
+            <img id="qrImage" class="mx-auto w-48 h-48 border rounded-xl shadow" />
+        </div>
+
+    </div>
+
+    <script>
+
+        /* =============================
+            1. GANTI INI DENGAN URL APPS SCRIPT KAMU
+        ============================== */
+        const scriptURL = "PASTE_GOOGLE_SCRIPT_URL_KAMU";
+
+
+        /* =============================
+            2. KIRIM DATA KE GOOGLE SHEETS
+        ============================== */
+        async function submitRSVP(event) {
+            event.preventDefault();
+
+            const data = {
+                name: document.getElementById("name").value,
+                phone: document.getElementById("phone").value,
+                attend: document.querySelector("input[name='attend']:checked")?.value,
+                guestCount: document.getElementById("guestCount").value,
+                note: document.getElementById("note").value
+            };
+
+            await fetch(scriptURL, {
+                method: "POST",
+                body: JSON.stringify(data)
+            });
+
+            document.getElementById("successMsg").classList.remove("hidden");
+            document.getElementById("rsvpForm").reset();
+        }
+
+
+        /* =============================
+            3. QR CODE UNTUK LINK GITHUB PAGES
+               (GANTI SESUAI LINK MU)
+        ============================== */
+        const githubLink = "https://USERNAME.github.io/REPO_NAME/";
+        const qrAPI = "https://chart.googleapis.com/chart?chs=400x400&cht=qr&chl=" + encodeURIComponent(githubLink);
+        document.getElementById("qrImage").src = qrAPI;
+
+    </script>
+
+</body>
+</html>
